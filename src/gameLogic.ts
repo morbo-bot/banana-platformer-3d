@@ -2,8 +2,35 @@ export const GRAVITY = -20;
 export const MOVE_SPEED = 6;
 export const JUMP_VELOCITY = 9;
 
-export function stepPhysics(player, dt, platforms) {
-  const next = {
+export type Vec3 = { x: number; y: number; z: number };
+
+export type Platform = {
+  x: number;
+  y: number;
+  z: number;
+  width: number;
+  depth: number;
+  height: number;
+};
+
+export type PlayerState = {
+  position: Vec3;
+  velocity: Vec3;
+  onGround: boolean;
+  height: number;
+  spawn: Vec3;
+};
+
+export type InputState = {
+  left: boolean;
+  right: boolean;
+  forward: boolean;
+  backward: boolean;
+  jump: boolean;
+};
+
+export function stepPhysics(player: PlayerState, dt: number, platforms: Platform[]): PlayerState {
+  const next: PlayerState = {
     position: { ...player.position },
     velocity: { ...player.velocity },
     onGround: false,
@@ -39,7 +66,7 @@ export function stepPhysics(player, dt, platforms) {
   return next;
 }
 
-export function applyInput(player, input) {
+export function applyInput(player: PlayerState, input: InputState): void {
   const vx = (input.right ? 1 : 0) - (input.left ? 1 : 0);
   const vz = (input.backward ? 1 : 0) - (input.forward ? 1 : 0);
   player.velocity.x = vx * MOVE_SPEED;
@@ -50,7 +77,7 @@ export function applyInput(player, input) {
   }
 }
 
-export function reachedGoal(playerPosition, goal) {
+export function reachedGoal(playerPosition: Vec3, goal: { x: number; y: number; z: number; radius: number }): boolean {
   const dx = playerPosition.x - goal.x;
   const dy = playerPosition.y - goal.y;
   const dz = playerPosition.z - goal.z;

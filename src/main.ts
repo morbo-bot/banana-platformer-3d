@@ -1,12 +1,12 @@
 import './style.css';
 import * as THREE from 'three';
-import { applyInput, reachedGoal, stepPhysics } from './gameLogic';
+import { applyInput, reachedGoal, stepPhysics, type InputState, type Platform, type PlayerState } from './gameLogic';
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 200);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
-document.querySelector('#app').appendChild(renderer.domElement);
+document.querySelector<HTMLDivElement>('#app')?.appendChild(renderer.domElement);
 
 const textureLoader = new THREE.TextureLoader();
 const grass = textureLoader.load('/assets/2026-02-10-16-53-15-grass-texture.png');
@@ -23,7 +23,7 @@ const dir = new THREE.DirectionalLight(0xffffff, 0.8);
 dir.position.set(4, 10, 2);
 scene.add(dir);
 
-const platforms = [
+const platforms: Platform[] = [
   { x: 0, y: 0, z: 0, width: 10, depth: 10, height: 1 },
   { x: 8, y: 2, z: -2, width: 6, depth: 6, height: 1 },
   { x: 14, y: 4, z: 2, width: 5, depth: 5, height: 1 },
@@ -59,7 +59,7 @@ const goalMesh = new THREE.Mesh(
 goalMesh.position.set(goal.x, goal.y, goal.z);
 scene.add(goalMesh);
 
-const player = {
+const player: PlayerState = {
   position: { x: 0, y: 3, z: 0 },
   velocity: { x: 0, y: 0, z: 0 },
   onGround: false,
@@ -67,8 +67,8 @@ const player = {
   spawn: { x: 0, y: 3, z: 0 },
 };
 
-const input = { left: false, right: false, forward: false, backward: false, jump: false };
-const map = {
+const input: InputState = { left: false, right: false, forward: false, backward: false, jump: false };
+const map: Record<string, keyof InputState> = {
   KeyA: 'left',
   ArrowLeft: 'left',
   KeyD: 'right',
@@ -90,11 +90,11 @@ window.addEventListener('keyup', (e) => {
 });
 
 camera.position.set(-6, 7, 12);
-const status = document.querySelector('#status');
+const status = document.querySelector<HTMLParagraphElement>('#status');
 
 let win = false;
 let last = performance.now();
-function frame(now) {
+function frame(now: number): void {
   const dt = Math.min((now - last) / 1000, 0.04);
   last = now;
 
@@ -106,7 +106,7 @@ function frame(now) {
 
   if (!win && reachedGoal(player.position, goal)) {
     win = true;
-    status.textContent = 'YOU WIN, PUNY HUMAN!';
+    if (status) status.textContent = 'YOU WIN, PUNY HUMAN!';
   }
 
   playerMesh.position.set(player.position.x, player.position.y, player.position.z);

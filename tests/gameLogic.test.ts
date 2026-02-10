@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { applyInput, reachedGoal, stepPhysics, JUMP_VELOCITY } from '../src/gameLogic';
+import { applyInput, reachedGoal, stepPhysics, JUMP_VELOCITY, type PlayerState } from '../src/gameLogic';
 
 const platform = [{ x: 0, y: 0, z: 0, width: 10, depth: 10, height: 1 }];
 
 describe('gameLogic', () => {
   it('lands on platform and sets onGround', () => {
-    const player = {
+    const player: PlayerState = {
       position: { x: 0, y: 2, z: 0 },
       velocity: { x: 0, y: 0, z: 0 },
       onGround: false,
@@ -24,17 +24,29 @@ describe('gameLogic', () => {
   });
 
   it('jumps only when grounded', () => {
-    const grounded = { velocity: { x: 0, y: 0, z: 0 }, onGround: true };
+    const grounded: PlayerState = {
+      position: { x: 0, y: 0, z: 0 },
+      velocity: { x: 0, y: 0, z: 0 },
+      onGround: true,
+      height: 1.8,
+      spawn: { x: 0, y: 0, z: 0 },
+    };
     applyInput(grounded, { left: false, right: false, forward: false, backward: false, jump: true });
     expect(grounded.velocity.y).toBe(JUMP_VELOCITY);
 
-    const air = { velocity: { x: 0, y: 0, z: 0 }, onGround: false };
+    const air: PlayerState = {
+      position: { x: 0, y: 1, z: 0 },
+      velocity: { x: 0, y: 0, z: 0 },
+      onGround: false,
+      height: 1.8,
+      spawn: { x: 0, y: 0, z: 0 },
+    };
     applyInput(air, { left: false, right: false, forward: false, backward: false, jump: true });
     expect(air.velocity.y).toBe(0);
   });
 
   it('resets player if falling out of world', () => {
-    const player = {
+    const player: PlayerState = {
       position: { x: 0, y: -21, z: 0 },
       velocity: { x: 1, y: -10, z: 1 },
       onGround: false,

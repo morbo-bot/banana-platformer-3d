@@ -29,6 +29,7 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npm test
+      - run: npm run typecheck
       - run: npm run build
       - run: npm run test:e2e
       - uses: actions/configure-pages@v5
@@ -38,6 +39,6 @@ jobs:
       - id: deployment
         uses: actions/deploy-pages@v4
       - name: Verify published page with Playwright
-        run: npx playwright test e2e/published.spec.js
+        run: npx playwright test e2e/published.spec.ts
         env:
           PLAYWRIGHT_BASE_URL: ${{ steps.deployment.outputs.page_url }}
